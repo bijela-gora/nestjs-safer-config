@@ -1,6 +1,9 @@
 {
-  "name": "nestjs-better-config",
-  "version": "0.1.0",
+  "name": "@private/nestjs-better-config",
+  "version": "0.1.1",
+  "files": [
+    "./dist"
+  ],
   "main": "./dist/index.js",
   "scripts": {
     "check:style": "prettier --config ./.prettierrc.json --check .",
