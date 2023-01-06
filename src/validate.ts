@@ -12,7 +12,11 @@ export function validate<T extends AnObject>(instance: T): T {
     validationError: { target: false, value: false },
   });
   if (errors.length > 0) {
-    throw new Error(errors.map((e) => e.toString()).join("\n"));
+    const message = errors.map((e) => e.toString(undefined, undefined, undefined, true)).join("");
+    throw new Error(
+      "An instance of an object has failed the validation:\n" +
+        message.replaceAll("An instance of an object has failed the validation:\n", "")
+    );
   }
   return instance;
 }
