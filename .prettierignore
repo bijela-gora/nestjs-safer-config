@@ -1,4 +1,4 @@
-/.verdacio
+/.verdaccio
 /dist
 /node_modules
 pnpm-lock.yaml
