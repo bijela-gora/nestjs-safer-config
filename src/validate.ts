@@ -8,12 +8,12 @@ function isNotEmptyArray<T>(arr: T[]): arr is NonEmptyArray<T> {
 }
 
 function errorsToMessage(errors: NonEmptyArray<ValidationError>): string {
-  const messageBuilder: string[] = [];
-  for (const e of errors) {
-    messageBuilder.push(e.toString(undefined, undefined, undefined, true));
-  }
-
-  return messageBuilder.join("");
+  return errors
+    .map((e) => e.toString(undefined, undefined, undefined, true))
+    .flatMap((str) => str.split("\n"))
+    .filter((str) => str !== "")
+    .filter((str, i) => i === 0 || !(str.includes("An instance of ") && str.includes(" has failed the validation:")))
+    .join("\n");
 }
 
 export function validate<T extends AnObject>(instance: T): T {

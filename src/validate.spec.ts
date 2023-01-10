@@ -28,9 +28,7 @@ describe("validate", () => {
     const expectedError = new Error(
       `An instance of AppConfig has failed the validation:
  - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production 
-An instance of AppConfig has failed the validation:
- - property secret has failed the following constraints: secret must be a number conforming to the specified constraints 
-`
+ - property secret has failed the following constraints: secret must be a number conforming to the specified constraints `
     );
     expect(() => validate(instance)).toThrow(expectedError);
   });
@@ -73,10 +71,8 @@ An instance of AppConfig has failed the validation:
     const expectedError = new Error(
       `An instance of Worker has failed the validation:
  - property title has failed the following constraints: title must contain a hello string 
-An instance of Worker has failed the validation:
  - property person.name has failed the following constraints: name must be longer than or equal to 5 characters 
- - property person.age has failed the following constraints: age must be a positive number 
-`
+ - property person.age has failed the following constraints: age must be a positive number `
     );
     expect(() => validate(instance)).toThrow(expectedError);
   });
