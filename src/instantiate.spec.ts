@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
-import { Expose, Transform, Type } from "class-transformer";
+import { Expose, Transform } from "class-transformer";
 import { IsBase64, IsIn, IsNumber } from "class-validator";
 
 import { instantiate } from "./instantiate";
@@ -9,7 +9,6 @@ describe("instantiate", () => {
   it("should instantiate AppConfig with expected properties", () => {
     class AppConfig {
       @IsNumber()
-      @Type()
       @Expose()
       PORT: number;
 
