@@ -8,9 +8,12 @@ function isNotEmptyArray<T>(arr: T[]): arr is NonEmptyArray<T> {
 }
 
 function errorsToMessage(errors: NonEmptyArray<ValidationError>): string {
-  const message = errors.map((e) => e.toString(undefined, undefined, undefined, true)).join("");
+  const messageBuilder: string[] = [];
+  for (const e of errors) {
+    messageBuilder.push(e.toString(undefined, undefined, undefined, true));
+  }
 
-  return message;
+  return messageBuilder.join("");
 }
 
 export function validate<T extends AnObject>(instance: T): T {
