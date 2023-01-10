@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
-import { Expose, Transform } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import { IsBase64, IsIn, IsNumber } from "class-validator";
 
 import { instantiate } from "./instantiate";
@@ -10,10 +10,11 @@ describe("instantiate", () => {
     class AppConfig {
       @IsNumber()
       @Expose()
+      @Type()
       PORT: number;
 
       @IsNumber()
-      @Transform(({ value }) => Number.parseInt(value, 10))
+      @Type()
       @Expose()
       SECRET_FROM_DOT_ENV: number;
 
