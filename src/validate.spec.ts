@@ -1,12 +1,12 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
-import { IsIn, IsNumber } from "class-validator";
-import { Expose } from "class-transformer";
+import { Contains, IsIn, IsInstance, IsNumber, IsPositive, MinLength, ValidateNested } from "class-validator";
+import { Expose, Transform } from "class-transformer";
 import { instantiate } from "./instantiate";
 import { validate } from "./validate";
 
 describe("validate", () => {
-  it("should throw in case of any issue with AppConfig instance", () => {
+  it("should throw particular message in case of any issue with AppConfig instance", () => {
     class AppConfig {
       @IsIn(["development", "qa", "stage", "production"])
       @Expose()
@@ -26,9 +26,57 @@ describe("validate", () => {
     expect(instance.stage).toEqual("dev");
 
     const expectedError = new Error(
-      "An instance of AppConfig has failed the validation:\n" +
-        " - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production, but got 'dev'\n" +
-        " - property secret has failed the following constraints: secret must be a number conforming to the specified constraints, but got '10_543'\n"
+      `An instance of AppConfig has failed the validation:
+ - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production 
+An instance of AppConfig has failed the validation:
+ - property secret has failed the following constraints: secret must be a number conforming to the specified constraints 
+`
+    );
+    expect(() => validate(instance)).toThrow(expectedError);
+  });
+
+  it("should return good message in case of validation of nested objects", () => {
+    class Person {
+      @MinLength(5)
+      @Expose()
+      name: string;
+
+      @IsPositive()
+      @IsNumber({
+        allowNaN: false,
+        allowInfinity: false,
+        maxDecimalPlaces: 0,
+      })
+      @Expose()
+      age: number;
+    }
+
+    class Worker {
+      @Contains("hello")
+      @Expose()
+      title: string;
+
+      @ValidateNested()
+      @IsInstance(Person)
+      @Transform((params) => instantiate(Person, params.value))
+      @Expose()
+      person: Person;
+    }
+
+    const instance = instantiate(Worker, {
+      title: "Developer",
+      person: {
+        name: "Lol",
+        age: -2,
+      },
+    });
+    const expectedError = new Error(
+      `An instance of Worker has failed the validation:
+ - property title has failed the following constraints: title must contain a hello string 
+An instance of Worker has failed the validation:
+ - property person.name has failed the following constraints: name must be longer than or equal to 5 characters 
+ - property person.age has failed the following constraints: age must be a positive number 
+`
     );
     expect(() => validate(instance)).toThrow(expectedError);
   });

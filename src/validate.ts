@@ -1,9 +1,21 @@
 import type { AnObject } from "./types";
-import { validateSync } from "class-validator";
+import { validateSync, ValidationError } from "class-validator";
+
+type NonEmptyArray<T> = [T, ...T[]];
+
+function isNotEmptyArray<T>(arr: T[]): arr is NonEmptyArray<T> {
+  return arr.length > 0;
+}
+
+function errorsToMessage(errors: NonEmptyArray<ValidationError>): string {
+  const message = errors.map((e) => e.toString(undefined, undefined, undefined, true)).join("");
+
+  return message;
+}
 
 export function validate<T extends AnObject>(instance: T): T {
   const errors = validateSync(instance, {
-    enableDebugMessages: true,
+    enableDebugMessages: false,
     skipUndefinedProperties: false,
     skipNullProperties: false,
     skipMissingProperties: false,
@@ -11,14 +23,8 @@ export function validate<T extends AnObject>(instance: T): T {
     forbidUnknownValues: true,
     validationError: { target: true, value: true },
   });
-  if (errors.length > 0) {
-    const message =
-      `An instance of ${instance.constructor.name} has failed the validation:\n` +
-      errors
-        .map((e) => e.toString(undefined, undefined, undefined, true).replace(/ \n$/, "") + `, but got '${e.value}'\n`)
-        .join("")
-        .replaceAll(`An instance of ${instance.constructor.name} has failed the validation:\n`, "");
-
+  if (isNotEmptyArray(errors)) {
+    const message = errorsToMessage(errors);
     throw new Error(message);
   }
   return instance;
