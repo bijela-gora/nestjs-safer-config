@@ -9,6 +9,7 @@
     "prepublish": "rm -rf dist && npm run check:style && npm run test && npm run build",
     "check:style": "prettier --config ./.prettierrc.json --check .",
     "test": "jest",
+    "prebuild": "rm -rf dist",
     "build": "tsc --project tsconfig.build.json"
   },
   "dependencies": {
