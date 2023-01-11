@@ -18,7 +18,7 @@ function errorsToMessage(errors: NonEmptyArray<ValidationError>): string {
 
 export function validate<T extends AnObject>(instance: T): T {
   const errors = validateSync(instance, {
-    enableDebugMessages: false,
+    enableDebugMessages: true,
     skipUndefinedProperties: false,
     skipNullProperties: false,
     skipMissingProperties: false,
