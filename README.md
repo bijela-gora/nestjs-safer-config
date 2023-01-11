@@ -38,7 +38,7 @@ And I did it.
    ```typescript
    @Module({
      imports: [
-       BetterConfig.register({
+       BetterConfigModule.register({
          isGlobal: true, // or false
          cls: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined.
          sources: [
@@ -109,7 +109,7 @@ And I did it.
 
    @Module({
      imports: [
-       BetterConfig.register({
+       BetterConfigModule.register({
          isGlobal: true,
          cls: AppConfig,
          sources: [
