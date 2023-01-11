@@ -4,7 +4,7 @@ import type { AnObject } from "./types";
 
 export function instantiate<T extends AnObject>(cls: Type<T>, obj: AnObject): T {
   return plainToInstance(cls, obj, {
-    // enableImplicitConversion: false,
+    enableImplicitConversion: true,
     excludeExtraneousValues: false,
   });
 }

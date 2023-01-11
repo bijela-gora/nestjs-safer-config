@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
 import { Expose, Type } from "class-transformer";
-import { IsBase64, IsIn, IsNumber } from "class-validator";
+import { Contains, IsBase64, IsIn, IsInstance, IsNumber, IsPositive, MinLength, ValidateNested } from "class-validator";
 
 import { instantiate } from "./instantiate";
 
@@ -32,21 +32,17 @@ describe("instantiate", () => {
   it("should instantiate AppConfig with expected properties", () => {
     class AppConfig {
       @IsNumber()
-      @Expose()
       @Type()
       PORT: number;
 
       @IsNumber()
       @Type()
-      @Expose()
       SECRET_FROM_DOT_ENV: number;
 
       @IsIn(["development", "qa", "stage", "production"])
-      @Expose()
       stage: string;
 
       @IsBase64()
-      @Expose()
       secret: string;
     }
 
@@ -70,5 +66,44 @@ describe("instantiate", () => {
 
     expect(instance).toHaveProperty("secret");
     expect(instance.secret).toEqual("c2VjcmV0");
+  });
+
+  it("should instantiate nested objects if property doesn't decorated with @Type()", () => {
+    class Person {
+      @MinLength(1)
+      name: string;
+
+      @IsPositive()
+      @IsNumber({
+        allowNaN: false,
+        allowInfinity: false,
+        maxDecimalPlaces: 0,
+      })
+      age: number;
+    }
+
+    class Worker {
+      @Contains("hello")
+      title: string;
+
+      @ValidateNested()
+      @IsInstance(Person)
+      person: Person;
+    }
+
+    const instance = instantiate(Worker, {
+      title: "hello",
+      person: {
+        name: "Y",
+        age: "30",
+      },
+    });
+    expect(instance).toBeInstanceOf(Worker);
+    expect(instance).toHaveProperty("title");
+    expect(instance).toHaveProperty("person");
+    expect(instance).toHaveProperty("person.name");
+    expect(instance).toHaveProperty("person.age");
+    expect(instance.person).toBeInstanceOf(Person);
+    expect(instance.person.age).toEqual(30);
   });
 });
