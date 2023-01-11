@@ -1,7 +1,17 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
 import { Expose, Type } from "class-transformer";
-import { Contains, IsBase64, IsIn, IsInstance, IsNumber, IsPositive, MinLength, ValidateNested } from "class-validator";
+import {
+  Contains,
+  IsBase64,
+  IsIn,
+  IsInstance,
+  IsNumber,
+  IsPositive,
+  IsUrl,
+  MinLength,
+  ValidateNested,
+} from "class-validator";
 
 import { instantiate } from "./instantiate";
 
@@ -66,6 +76,21 @@ describe("instantiate", () => {
 
     expect(instance).toHaveProperty("secret");
     expect(instance.secret).toEqual("c2VjcmV0");
+  });
+
+  it("should take into account default values", () => {
+    class AppConfig {
+      @IsNumber()
+      PORT: number = 3000;
+
+      @IsUrl({ require_tld: false })
+      HOSTNAME: string = "localhost";
+    }
+
+    const instance = instantiate(AppConfig, {});
+    expect(instance).toBeInstanceOf(AppConfig);
+    expect(instance.PORT).toEqual(3000);
+    expect(instance.HOSTNAME).toEqual("localhost");
   });
 
   it("should instantiate nested objects if property doesn't decorated with @Type()", () => {
