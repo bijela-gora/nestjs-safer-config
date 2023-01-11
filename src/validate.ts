@@ -22,6 +22,7 @@ export function validate<T extends AnObject>(instance: T): T {
     skipUndefinedProperties: false,
     skipNullProperties: false,
     skipMissingProperties: false,
+    whitelist: true,
     forbidNonWhitelisted: true,
     forbidUnknownValues: true,
     validationError: { target: true, value: true },

@@ -6,6 +6,37 @@ import { instantiate } from "./instantiate";
 import { validate } from "./validate";
 
 describe("validate", () => {
+  it("should throw the error if extra property present", () => {
+    class AppConfig {
+      @IsIn(["development", "qa", "stage", "production"])
+      @Expose()
+      stage: string;
+
+      @IsNumber({
+        allowNaN: false,
+        allowInfinity: false,
+      })
+      @Expose()
+      secret: number;
+
+      port: number;
+    }
+
+    const instance = instantiate(AppConfig, {
+      stage: "qa",
+      secret: "10543",
+      port: 3000,
+    });
+
+    expect(instance.stage).toEqual("qa");
+    expect(instance.secret).toEqual(10543);
+    expect(instance.port).toEqual(3000);
+
+    const expectedError = new Error(`An instance of AppConfig has failed the validation:
+ - property port has failed the following constraints: property port should not exist `);
+    expect(() => validate(instance)).toThrow(expectedError);
+  });
+
   it("should throw particular message in case of any issue with AppConfig instance", () => {
     class AppConfig {
       @IsIn(["development", "qa", "stage", "production"])
