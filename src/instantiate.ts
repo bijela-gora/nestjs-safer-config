@@ -6,6 +6,5 @@ export function instantiate<T extends AnObject>(cls: Type<T>, obj: AnObject): T 
   return plainToInstance(cls, obj, {
     // enableImplicitConversion: false,
     excludeExtraneousValues: false,
-    exposeUnsetFields: false,
   });
 }
