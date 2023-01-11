@@ -33,7 +33,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
           " - property port has failed the following constraints: property port should not exist \n"
       ),
@@ -54,7 +54,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of SchedulerConfig has failed the validation:\n" +
           " - property days has failed the following constraints: each value in days must be a number conforming to the specified constraints \n"
       ),
@@ -80,7 +80,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
           " - property schedulers[0].cron has failed the following constraints: cron must be a string \n"
       ),
@@ -106,7 +106,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
           " - property schedulers has failed the following constraints: each value in schedulers must be an instance of SchedulerConfig \n"
       ),
@@ -130,7 +130,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
           " - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production \n" +
           "\n" +
@@ -177,7 +177,7 @@ describe("validate", () => {
     const result = validate(instance);
     expect(result).toEqual({
       success: false,
-      error: new Error(
+      error: new TypeError(
         "An instance of Worker has failed the validation:\n" +
           " - property title has failed the following constraints: title must contain a Manager string \n" +
           "\n" +

@@ -34,7 +34,7 @@ export function validate<T extends AnObject>(instance: T): Result<T> {
   });
   if (isNotEmptyArray(errors)) {
     const message = showErrors(errors);
-    return { success: false, error: new Error(message) };
+    return { success: false, error: new TypeError(message) };
   }
   return { success: true, value: instance };
 }
