@@ -6,6 +6,29 @@ import { IsBase64, IsIn, IsNumber } from "class-validator";
 import { instantiate } from "./instantiate";
 
 describe("instantiate", () => {
+  it("should expose extraneous properties", () => {
+    class AppConfig {
+      @IsNumber()
+      @Expose()
+      @Type()
+      PORT: number;
+
+      HOSTNAME: string;
+    }
+
+    const instance = instantiate(AppConfig, {
+      PORT: "3000",
+      HOSTNAME: "localhost",
+    });
+    expect(instance).toBeInstanceOf(AppConfig);
+
+    expect(instance).toHaveProperty("PORT");
+    expect(instance.PORT).toEqual(3000);
+
+    expect(instance).toHaveProperty("HOSTNAME");
+    expect(instance.HOSTNAME).toEqual("localhost");
+  });
+
   it("should instantiate AppConfig with expected properties", () => {
     class AppConfig {
       @IsNumber()
