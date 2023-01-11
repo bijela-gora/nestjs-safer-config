@@ -7,16 +7,21 @@ function isNotEmptyArray<T>(arr: T[]): arr is NonEmptyArray<T> {
   return arr.length > 0;
 }
 
-function errorsToMessage(errors: NonEmptyArray<ValidationError>): string {
-  return errors
-    .map((e) => e.toString(undefined, undefined, undefined, true))
-    .flatMap((str) => str.split("\n"))
-    .filter((str) => str !== "")
-    .filter((str, i) => i === 0 || !(str.includes("An instance of ") && str.includes(" has failed the validation:")))
-    .join("\n");
+function showErrors(errors: NonEmptyArray<ValidationError>): string {
+  return errors.map((e) => e.toString(undefined, undefined, undefined, true)).join("\n");
 }
 
-export function validate<T extends AnObject>(instance: T): T {
+type Result<T> =
+  | {
+      success: true;
+      value: T;
+    }
+  | {
+      success: false;
+      error: Error;
+    };
+
+export function validate<T extends AnObject>(instance: T): Result<T> {
   const errors = validateSync(instance, {
     enableDebugMessages: true,
     skipUndefinedProperties: false,
@@ -28,8 +33,8 @@ export function validate<T extends AnObject>(instance: T): T {
     validationError: { target: true, value: true },
   });
   if (isNotEmptyArray(errors)) {
-    const message = errorsToMessage(errors);
-    throw new Error(message);
+    const message = showErrors(errors);
+    return { success: false, error: new Error(message) };
   }
-  return instance;
+  return { success: true, value: instance };
 }

@@ -1,73 +1,148 @@
 import "reflect-metadata";
 import { describe, expect } from "@jest/globals";
-import { Contains, IsIn, IsInstance, IsNumber, IsPositive, MinLength, ValidateNested } from "class-validator";
-import { Expose, Transform } from "class-transformer";
-import { instantiate } from "./instantiate";
+import {
+  Contains,
+  IsArray,
+  IsIn,
+  IsInstance,
+  IsNumber,
+  IsPositive,
+  IsString,
+  MinLength,
+  ValidateNested,
+} from "class-validator";
 import { validate } from "./validate";
 
 describe("validate", () => {
-  it("should throw the error if extra property present", () => {
+  it("should return the error if extra property present", () => {
     class AppConfig {
-      @IsIn(["development", "qa", "stage", "production"])
-      @Expose()
-      stage: string;
-
       @IsNumber({
         allowNaN: false,
         allowInfinity: false,
       })
-      @Expose()
       secret: number;
 
       port: number;
     }
 
-    const instance = instantiate(AppConfig, {
-      stage: "qa",
-      secret: "10543",
+    const instance = Object.assign(new AppConfig(), {
+      secret: 10543,
       port: 3000,
     });
 
-    expect(instance.stage).toEqual("qa");
-    expect(instance.secret).toEqual(10543);
-    expect(instance.port).toEqual(3000);
-
-    const expectedError = new Error(`An instance of AppConfig has failed the validation:
- - property port has failed the following constraints: property port should not exist `);
-    expect(() => validate(instance)).toThrow(expectedError);
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of AppConfig has failed the validation:\n" +
+          " - property port has failed the following constraints: property port should not exist \n"
+      ),
+    });
   });
 
-  it("should throw particular message in case of any issue with AppConfig instance", () => {
+  it("should validate arrays", () => {
+    class SchedulerConfig {
+      @IsArray()
+      @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 0 }, { each: true })
+      days: number[];
+    }
+
+    const instance = Object.assign(new SchedulerConfig(), {
+      days: [1, "2", null],
+    });
+
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of SchedulerConfig has failed the validation:\n" +
+          " - property days has failed the following constraints: each value in days must be a number conforming to the specified constraints \n"
+      ),
+    });
+  });
+
+  it("should validate arrays of objects", () => {
+    class SchedulerConfig {
+      @IsString()
+      cron: string;
+    }
+
+    class AppConfig {
+      @IsInstance(SchedulerConfig, { each: true })
+      @ValidateNested()
+      schedulers: SchedulerConfig[];
+    }
+
+    const instance = Object.assign(new AppConfig(), {
+      schedulers: [new SchedulerConfig()],
+    });
+
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of AppConfig has failed the validation:\n" +
+          " - property schedulers[0].cron has failed the following constraints: cron must be a string \n"
+      ),
+    });
+  });
+
+  it("should validate arrays of objects when objects (case: one object was not instantiated)", () => {
+    class SchedulerConfig {
+      @IsString()
+      cron: string;
+    }
+
+    class AppConfig {
+      @IsArray()
+      @IsInstance(SchedulerConfig, { each: true })
+      schedulers: SchedulerConfig[];
+    }
+
+    const scheduleCfg = new SchedulerConfig();
+    scheduleCfg.cron = "45 23 * * 6";
+    const instance = Object.assign(new AppConfig(), { schedulers: [scheduleCfg, { cron: "45 23 * * 6" }] });
+
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of AppConfig has failed the validation:\n" +
+          " - property schedulers has failed the following constraints: each value in schedulers must be an instance of SchedulerConfig \n"
+      ),
+    });
+  });
+
+  it("should return an error where all validation issues described", () => {
     class AppConfig {
       @IsIn(["development", "qa", "stage", "production"])
-      @Expose()
       stage: string;
 
       @IsNumber()
-      @Expose()
       secret: number;
     }
 
-    const instance = instantiate(AppConfig, {
+    const instance = Object.assign(new AppConfig(), {
       stage: "dev",
       secret: "10_543",
     });
 
-    expect(instance).toHaveProperty("stage");
-    expect(instance.stage).toEqual("dev");
-
-    const expectedError = new Error(
-      `An instance of AppConfig has failed the validation:
- - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production 
- - property secret has failed the following constraints: secret must be a number conforming to the specified constraints `
-    );
-    expect(() => validate(instance)).toThrow(expectedError);
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of AppConfig has failed the validation:\n" +
+          " - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production \n" +
+          "\n" +
+          "An instance of AppConfig has failed the validation:\n" +
+          " - property secret has failed the following constraints: secret must be a number conforming to the specified constraints \n"
+      ),
+    });
   });
 
-  it("should return good message in case of validation of nested objects", () => {
+  it("should return an error with good message in case of validation failed for nested object", () => {
     class Person {
-      @MinLength(5)
-      @Expose()
+      @MinLength(3)
       name: string;
 
       @IsPositive()
@@ -76,35 +151,40 @@ describe("validate", () => {
         allowInfinity: false,
         maxDecimalPlaces: 0,
       })
-      @Expose()
       age: number;
     }
 
     class Worker {
-      @Contains("hello")
-      @Expose()
+      @Contains("Manager")
       title: string;
 
       @ValidateNested()
       @IsInstance(Person)
-      @Transform((params) => instantiate(Person, params.value))
-      @Expose()
       person: Person;
     }
 
-    const instance = instantiate(Worker, {
-      title: "Developer",
-      person: {
-        name: "Lol",
-        age: -2,
-      },
+    const subInstance = Object.assign(new Person(), {
+      name: "Y",
+      age: -1,
     });
-    const expectedError = new Error(
-      `An instance of Worker has failed the validation:
- - property title has failed the following constraints: title must contain a hello string 
- - property person.name has failed the following constraints: name must be longer than or equal to 5 characters 
- - property person.age has failed the following constraints: age must be a positive number `
-    );
-    expect(() => validate(instance)).toThrow(expectedError);
+
+    const instance = new Worker();
+    Object.assign(instance, {
+      title: "Developer",
+      person: subInstance,
+    });
+
+    const result = validate(instance);
+    expect(result).toEqual({
+      success: false,
+      error: new Error(
+        "An instance of Worker has failed the validation:\n" +
+          " - property title has failed the following constraints: title must contain a Manager string \n" +
+          "\n" +
+          "An instance of Worker has failed the validation:\n" +
+          " - property person.name has failed the following constraints: name must be longer than or equal to 3 characters \n" +
+          " - property person.age has failed the following constraints: age must be a positive number \n"
+      ),
+    });
   });
 });
