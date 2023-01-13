@@ -39,6 +39,29 @@ describe("instantiate", () => {
     expect(instance.HOSTNAME).toEqual("localhost");
   });
 
+  it("will expose extraneous properties if the are should not listed on class", () => {
+    class AppConfig {
+      @IsNumber()
+      @Expose()
+      @Type()
+      PORT: number;
+
+      HOSTNAME: string;
+    }
+
+    const instance = instantiate(AppConfig, {
+      PORT: "3000",
+      HOSTNAME: "localhost",
+      shouldNotBeHere: "yes",
+    });
+
+    expect(instance).toEqual({
+      PORT: 3000,
+      HOSTNAME: "localhost",
+      shouldNotBeHere: "yes",
+    });
+  });
+
   it("should instantiate AppConfig with expected properties", () => {
     class AppConfig {
       @IsNumber()

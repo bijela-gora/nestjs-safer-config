@@ -28,7 +28,7 @@ export function validate<T extends AnObject>(instance: T): Result<T> {
     skipNullProperties: false,
     skipMissingProperties: false,
     whitelist: true,
-    forbidNonWhitelisted: true,
+    forbidNonWhitelisted: false,
     forbidUnknownValues: true,
     validationError: { target: true, value: true },
   });

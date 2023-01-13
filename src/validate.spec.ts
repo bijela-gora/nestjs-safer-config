@@ -14,7 +14,7 @@ import {
 import { validate } from "./validate";
 
 describe("validate", () => {
-  it("should return the error if extra property present", () => {
+  it("should remove extra property if present", () => {
     class AppConfig {
       @IsNumber({
         allowNaN: false,
@@ -28,15 +28,19 @@ describe("validate", () => {
     const instance = Object.assign(new AppConfig(), {
       secret: 10543,
       port: 3000,
+      shouldNotBeHere: "yes",
     });
 
+    expect(instance).toHaveProperty("shouldNotBeHere");
+
     const result = validate(instance);
+
     expect(result).toEqual({
-      success: false,
-      error: new TypeError(
-        "An instance of AppConfig has failed the validation:\n" +
-          " - property port has failed the following constraints: property port should not exist \n"
-      ),
+      success: true,
+      value: Object.assign(new AppConfig(), {
+        secret: 10543,
+        port: undefined, // this is how class-validator works
+      }),
     });
   });
 
