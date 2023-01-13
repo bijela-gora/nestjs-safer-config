@@ -1,1 +1,1 @@
-export { BetterConfigModule } from "./better-config.module";
+export { makeConfig } from "./make-config";
