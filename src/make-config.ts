@@ -1,8 +1,10 @@
-import type { BetterConfigFactoryOptions } from "./types";
+import type { Type } from "@nestjs/common";
+
+import type { AnObject, BetterConfigFactoryOptions } from "./types";
 import { instantiate } from "./instantiate";
 import { validate } from "./validate";
 
-export async function makeConfig(options: BetterConfigFactoryOptions) {
+export async function makeConfig<T extends Type<AnObject>>(options: BetterConfigFactoryOptions<T>): Promise<T> {
   const sources = await Promise.all(options.sources);
   const instance = instantiate(options.useClass, Object.assign(Object.create(null), ...sources));
   const validationResult = validate(instance);

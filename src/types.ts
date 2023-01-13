@@ -2,7 +2,7 @@ import type { Type } from "@nestjs/common";
 
 export type AnObject = Record<keyof any, any>;
 
-export interface BetterConfigFactoryOptions {
-  useClass: Type<AnObject>;
+export interface BetterConfigFactoryOptions<T extends Type<AnObject>> {
+  useClass: T;
   sources: Array<AnObject | Promise<AnObject>>;
 }
