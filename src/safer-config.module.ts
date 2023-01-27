@@ -20,8 +20,13 @@ export class SaferConfigModule {
   static registerAsync<T extends object>(options: SaferConfigModuleAsyncOptions<T>): DynamicModule {
     const instanceProvider: FactoryProvider<T> = {
       provide: options.createInstanceOf,
-      useFactory: async (...args: unknown[]) => {
-        return makeConfig(options.createInstanceOf, await options.sourcesFactory(...args));
+      useFactory: async (...args) => {
+        return makeConfig(
+          options.createInstanceOf,
+          await options.sourcesFactory(
+            ...args // eslint-disable-line @typescript-eslint/no-unsafe-argument
+          )
+        );
       },
       ...(options.inject ? { inject: options.inject } : undefined),
     };

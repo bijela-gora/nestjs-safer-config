@@ -15,5 +15,5 @@ export interface SaferConfigModuleAsyncOptions<T>
   extends Omit<SaferConfigOptions<T>, "sources">,
     ModuleMetadataImports {
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
-  sourcesFactory: (...args: unknown[]) => Promise<Sources> | Sources;
+  sourcesFactory: (...args: any[]) => Promise<Sources> | Sources;
 }
