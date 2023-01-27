@@ -1,20 +1,28 @@
-# Configuration module for Nest
+# Configuration module for NestJS
+
+Currently, this package is intended only for `class-transformer` and `class-validator` users.
 
 ## Motivation
 
 I wanted config module for NestJS to be:
 
-- simple to use
+- easy to use
 - type-safe
 - reliable
 - explains when something goes wrong
 - suitable for need of current project
 
-And I did it.
+And I made it.
 
-## Examples
+## Description
 
-### Simple
+The `SaferConfigModule` allows to define and load multiple configuration from any source you want: plain object, yaml file, json file, toml file, or any other parsable format, or from HTTP json response or stream).
+
+You can manage complex configuration object hierarchies with nested configuration.
+
+## How to use
+
+### Simple case
 
 1. First, describe how config should look like using class declaration statement. And decorate fields with `class-validator` decorators. For example,
 
@@ -33,18 +41,17 @@ And I did it.
 
    > **WARNING**: I strongly recommend to add `readonly` modifier to all and each fields
 
-2. Second, import `BetterConfigModule` in the following way:
+2. Second, import `SaferConfigModule` in the following way:
 
    ```typescript
    @Module({
      imports: [
-       BetterConfigModule.register({
-         isGlobal: true, // or false
-         cls: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined.
+       SaferConfigModule.register({
+         isGlobal: true, // or false, or you can skip `isGlobal`
+         cls: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined, or `constructor` shouldn't expect any arguments
          sources: [
-           // `sources` should be an array of objects or Promises which will resolve to objects
-           // `sources` will be merged into one object. That object will be used to instantiate `AppConfig`
-           // each property of all sources will be assigned to corresponding property of AppConfig
+           // `sources` must be an array of objects or promises of objects
+           // `sources` will be merged into one object. That object will be used to populate `AppConfig` properties with `Object.assign()`
            // in this example let's use one object
            { SECRET_PHRASE: process.env["SECRET_PHRASE"], stage: process.env["STAGE_NAME"], port: process.env["PORT"] },
          ],
@@ -109,7 +116,7 @@ And I did it.
 
    @Module({
      imports: [
-       BetterConfigModule.register({
+       SaferConfigModule.register({
          isGlobal: true,
          cls: AppConfig,
          sources: [
@@ -128,9 +135,5 @@ And I did it.
 
 ## Trade-offs
 
-The `BetterConfigModule` allows you to define and load multiple configuration from any source you want: plain object, yaml file, json file, toml file, or any other parsable format, or from HTTP json response or stream). You can manage complex configuration object hierarchies with nested configuration. But you SHOULD NOT do this from unknown places as `registerAs` method from `@nestjs/config` allows you to do. Yeah, you can put all such functions to one directory, and agree with your team to call `registerAs` only from that files. But this is not type-safe enough for me.
-
-The main purpose of using `class-validator` and `class-transformer` packages is to allow developers to inject configuration class using **standard** and simplest constructor injection in a type-safe way.
-One more advantage of using packages mentioned above is that they widely knew and used by default in NestJS projects.
-The disadvantage is that decorators might be not the best way to describe expectations. For example, it is crucial to not forget to add `@ValidateNested()` if you need to validate nested instances. Or it is required to add `@Type(() => Number)` if you want to apply string-to-number transformations for a field.
-Perhaps the biggest disadvantage is that at this moment the `class-validator` and `class-transformer` packages have little support. Little support from reach companies which makes money on open-source and a little support from package owners.
+1. The main purpose of using `class-validator` and `class-transformer` packages is to allow developers to inject configuration object as a dependency using **standard** and simplest constructor injection in a type-safe way. One more advantage of using packages mentioned above is that they widely knew and used by default in NestJS projects. The disadvantage is that decorators might be not the best way to describe expectations. For example, it is crucial to not forget to add `@ValidateNested()` if you need to validate nested instances. Or it is required to add `@Type(() => Number)` if you want to apply string-to-number transformations for a field. Perhaps the biggest disadvantage is that at this moment the `class-validator` and `class-transformer` packages have little support. Little support from reach companies which makes money on open-source and a little support from package owners.
+2. `@nestjs/config` have `registerAs` method. With this kind of API there is no way to achieve type-safety, so, there is no such feature in `nestjs-safer-config` package.
