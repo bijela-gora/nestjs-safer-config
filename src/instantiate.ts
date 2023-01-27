@@ -1,7 +1,6 @@
 import { ClassConstructor, plainToInstance } from "class-transformer";
-import type { AnObject } from "./types";
 
-export function instantiate<T>(cls: ClassConstructor<T>, obj: AnObject): T {
+export function instantiate<T>(cls: ClassConstructor<T>, obj: unknown): T {
   return plainToInstance(cls, obj, {
     exposeDefaultValues: true,
     enableImplicitConversion: true,

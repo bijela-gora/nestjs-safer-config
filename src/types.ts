@@ -1,22 +1,21 @@
 import type { ClassConstructor } from "class-transformer";
 import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency } from "@nestjs/common";
 
-export type AnObject = Record<keyof any, unknown>;
-export type EmptyObject = Record<keyof any, never>;
+type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
-export type Sources = Array<AnObject | Promise<AnObject>>;
+export type EmptyObject = Record<never, never>;
 
-interface WithIsGlobal {
+export type Sources = Array<EmptyObject | Promise<EmptyObject>>;
+
+export interface BetterConfigOptions<T> {
   isGlobal?: boolean;
+  createInstanceOf: ClassConstructor<T>;
+  sources: Sources;
 }
 
-export interface BetterConfigOptions<T> extends WithIsGlobal {
-  createInstanceOf: ClassConstructor<T>;
-  sources: Array<AnObject | Promise<AnObject>>;
-}
-
-export interface BetterConfigModuleAsyncOptions<T> extends WithIsGlobal, Pick<ModuleMetadata, "imports"> {
-  createInstanceOf: ClassConstructor<T>;
+export interface BetterConfigModuleAsyncOptions<T>
+  extends Omit<BetterConfigOptions<T>, "sources">,
+    ModuleMetadataImports {
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
-  sourcesFactory: (...args: unknown[]) => Sources | Promise<Sources>;
+  sourcesFactory: (...args: unknown[]) => Promise<Sources>;
 }

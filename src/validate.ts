@@ -1,4 +1,4 @@
-import type { AnObject } from "./types";
+import type { EmptyObject } from "./types";
 import { validateSync, ValidationError } from "class-validator";
 
 type NonEmptyArray<T> = [T, ...T[]];
@@ -21,7 +21,7 @@ type Result<T> =
       error: Error;
     };
 
-export function validate<T extends AnObject>(instance: T): Result<T> {
+export function validate<T extends EmptyObject>(instance: T): Result<T> {
   const errors = validateSync(instance, {
     enableDebugMessages: true,
     skipUndefinedProperties: false,

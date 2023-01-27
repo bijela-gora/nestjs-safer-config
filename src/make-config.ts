@@ -1,13 +1,13 @@
 import type { ClassConstructor } from "class-transformer";
-import type { AnObject, EmptyObject } from "./types";
+import type { EmptyObject } from "./types";
 import { instantiate } from "./instantiate";
 import { validate } from "./validate";
 
-export async function makeConfig<R extends AnObject>(
+export async function makeConfig<R extends EmptyObject>(
   createInstanceOf: ClassConstructor<R>,
-  sources: Array<AnObject | Promise<AnObject>>
+  sources: Array<EmptyObject | Promise<EmptyObject>>
 ): Promise<R> {
-  const obj = Object.assign({} as EmptyObject, ...(await Promise.all(sources))) as AnObject;
+  const obj: unknown = Object.assign({} as EmptyObject, ...(await Promise.all(sources))) as unknown;
   const instance = instantiate(createInstanceOf, obj);
   const validationResult = validate(instance);
   if (validationResult.success !== true) {
