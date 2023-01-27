@@ -3,9 +3,7 @@ import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency } from "
 
 type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
-export type EmptyObject = Record<never, never>;
-
-export type Sources = Array<EmptyObject | Promise<EmptyObject>>;
+export type Sources = Array<object | Promise<object>>;
 
 export interface BetterConfigOptions<T> {
   isGlobal?: boolean;
