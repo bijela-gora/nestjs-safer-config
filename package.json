@@ -7,11 +7,9 @@
   ],
   "main": "./dist/index.js",
   "scripts": {
-    "lint": "eslint .",
-    "prepublishOnly": "rm -rf dist && pnpm run check:style && pnpm run lint && pnpm run test && pnpm run build",
     "check:style": "prettier --config ./.prettierrc.json --check .",
+    "lint": "eslint .",
     "test": "jest",
-    "prebuild": "rm -rf dist",
     "watch": "tsc --watch --project tsconfig.build.json",
     "build": "tsc --project tsconfig.build.json"
   },
