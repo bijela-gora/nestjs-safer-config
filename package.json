@@ -8,7 +8,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint .",
-    "prepublish": "rm -rf dist && pnpm run check:style && pnpm run lint && pnpm run test && pnpm run build",
+    "prepublishOnly": "rm -rf dist && pnpm run check:style && pnpm run lint && pnpm run test && pnpm run build",
     "check:style": "prettier --config ./.prettierrc.json --check .",
     "test": "jest",
     "prebuild": "rm -rf dist",
