@@ -3,7 +3,7 @@ import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency } from "
 
 type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
-export type Sources = Array<object | Promise<object>>;
+export type Sources = Array<unknown | Promise<unknown>>;
 
 export interface SaferConfigOptions<T> {
   isGlobal?: boolean;
