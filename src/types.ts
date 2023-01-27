@@ -17,5 +17,5 @@ export interface BetterConfigModuleAsyncOptions<T>
   extends Omit<BetterConfigOptions<T>, "sources">,
     ModuleMetadataImports {
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
-  sourcesFactory: (...args: unknown[]) => Promise<Sources>;
+  sourcesFactory: (...args: unknown[]) => Promise<Sources> | Sources;
 }
