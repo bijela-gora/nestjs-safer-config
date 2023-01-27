@@ -7,7 +7,7 @@
   ],
   "main": "./dist/index.js",
   "scripts": {
-    "check:style": "prettier --config ./.prettierrc.json --check .",
+    "check:style": "prettier --config .prettierrc.json --check .",
     "lint": "eslint .",
     "test": "jest",
     "watch": "tsc --watch --project tsconfig.build.json",
