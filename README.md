@@ -22,7 +22,7 @@ You can manage complex configuration object hierarchies with nested configuratio
 
 ## How to use
 
-### Simple case
+### process.env
 
 1. First, describe how config should look like using class declaration statement. And decorate fields with `class-validator` decorators. For example,
 
@@ -39,7 +39,7 @@ You can manage complex configuration object hierarchies with nested configuratio
    }
    ```
 
-   > **WARNING**: I strongly recommend to add `readonly` modifier to all and each fields
+   > **NOTE**: I strongly recommend to add `readonly` modifier to all and each fields
 
 2. Second, import `SaferConfigModule` in the following way:
 
@@ -51,9 +51,9 @@ You can manage complex configuration object hierarchies with nested configuratio
          cls: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined, or `constructor` shouldn't expect any arguments
          sources: [
            // `sources` must be an array of objects or promises of objects
-           // `sources` will be merged into one object. That object will be used to populate `AppConfig` properties with `Object.assign()`
+           // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
            // in this example let's use one object
-           { SECRET_PHRASE: process.env["SECRET_PHRASE"], stage: process.env["STAGE_NAME"], port: process.env["PORT"] },
+           process.env,
          ],
        }),
      ],
@@ -89,7 +89,12 @@ You can manage complex configuration object hierarchies with nested configuratio
      bootstrap();
      ```
 
-### With dotenv
+4. Last thing to do is to start your app and provide environment variables:
+   ```shell
+   SECRET_PHRASE='somesecret' stage=stage port=8080 node ./dist/main.js
+   ```
+
+### dotenv
 
 `dotenv` package exports useful `parse` function. Let's utilize it to read `.env` file.
 
@@ -120,8 +125,7 @@ You can manage complex configuration object hierarchies with nested configuratio
          isGlobal: true,
          cls: AppConfig,
          sources: [
-           // `sources` will be merged into one object. That object will be used to instantiate `AppConfig`
-           // each property of all sources will be assigned to corresponding property of AppConfig
+           // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
            dotEnvSource(),
            process.env,
          ],
