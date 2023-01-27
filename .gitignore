@@ -3,3 +3,4 @@
 /.verdaccio
 start.sh
 /.idea
+/.npmrc
