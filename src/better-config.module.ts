@@ -1,9 +1,9 @@
-import type { DynamicModule, FactoryProvider, Type } from "@nestjs/common";
+import type { DynamicModule, FactoryProvider } from "@nestjs/common";
 import { makeConfig } from "./make-config";
 import type { BetterConfigModuleAsyncOptions, AnObject, BetterConfigOptions } from "./types";
 
 export class BetterConfigModule {
-  static register<T extends Type<AnObject>>(options: BetterConfigOptions<T>): DynamicModule {
+  static register<T extends AnObject>(options: BetterConfigOptions<T>): DynamicModule {
     return {
       module: BetterConfigModule,
       global: options.isGlobal ?? false,
@@ -17,10 +17,8 @@ export class BetterConfigModule {
     };
   }
 
-  static registerAsync<ClassToInstantiate extends Type<AnObject>>(
-    options: BetterConfigModuleAsyncOptions<ClassToInstantiate>
-  ): DynamicModule {
-    const instanceProvider: FactoryProvider<ClassToInstantiate> = {
+  static registerAsync<T extends AnObject>(options: BetterConfigModuleAsyncOptions<T>): DynamicModule {
+    const instanceProvider: FactoryProvider<T> = {
       provide: options.createInstanceOf,
       useFactory: async (...args: unknown[]) => {
         return makeConfig(options.createInstanceOf, await options.sourcesFactory(...args));

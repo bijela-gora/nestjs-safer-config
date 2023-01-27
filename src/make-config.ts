@@ -1,18 +1,18 @@
-import type { Type } from "@nestjs/common";
-
-import type { AnObject } from "./types";
+import type { ClassConstructor } from "class-transformer";
+import type { AnObject, EmptyObject } from "./types";
 import { instantiate } from "./instantiate";
 import { validate } from "./validate";
 
-export async function makeConfig<T extends Type<AnObject>>(
-  createInstanceOf: T,
+export async function makeConfig<R extends AnObject>(
+  createInstanceOf: ClassConstructor<R>,
   sources: Array<AnObject | Promise<AnObject>>
-): Promise<T> {
-  const instance = instantiate(createInstanceOf, Object.assign(Object.create(null), ...(await Promise.all(sources))));
+): Promise<R> {
+  const obj = Object.assign({} as EmptyObject, ...(await Promise.all(sources))) as AnObject;
+  const instance = instantiate(createInstanceOf, obj);
   const validationResult = validate(instance);
   if (validationResult.success !== true) {
     throw validationResult.error;
   }
-  const cfg = validationResult.value;
+  const cfg: R = validationResult.value;
   return cfg;
 }
