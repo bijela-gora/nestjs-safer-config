@@ -137,6 +137,42 @@ You can manage complex configuration object hierarchies with nested configuratio
    export class AppModule {}
    ```
 
+### HTTP source
+
+What if you want to use secrets from env vars to fetch secrets over HTTP? Use `SaferConfigModule.registerAsync` static method.
+
+```typescript
+import { SaferConfigModule } from "nestjs-safer-config";
+
+class EnvVarSecrets {
+  @IsString()
+  token: string;
+}
+
+const envVarsSecretsModule = SaferConfigModule.register({
+  createInstanceOf: EnvVarSecrets,
+  sources: [process.env],
+});
+
+const secretsFetchWithHttpModule = SaferConfigModule.registerAsync({
+  imports: [envVarsSecretsModule],
+  isGlobal: true,
+  createInstalceOf: AppConfig,
+  inject: [EnvVarSecrets],
+  sourcesFactory: async (envVarSecrets: EnvVarSecrets) => {
+    const url = "https://example.com/secrets";
+    return await fetchSecretsViaHttp(url, envVarSecrets.token);
+  },
+});
+
+@Module({
+  imports: [secretsFetchWithHttpModule],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
 ## Trade-offs
 
 1. The main purpose of using `class-validator` and `class-transformer` packages is to allow developers to inject configuration object as a dependency using **standard** and simplest constructor injection in a type-safe way. One more advantage of using packages mentioned above is that they widely knew and used by default in NestJS projects. The disadvantage is that decorators might be not the best way to describe expectations. For example, it is crucial to not forget to add `@ValidateNested()` if you need to validate nested instances. Or it is required to add `@Type(() => Number)` if you want to apply string-to-number transformations for a field. Perhaps the biggest disadvantage is that at this moment the `class-validator` and `class-transformer` packages have little support. Little support from reach companies which makes money on open-source and a little support from package owners.
