@@ -14,6 +14,17 @@ I wanted config module for NestJS to be:
 
 And I made it.
 
+## Prerequisites
+
+The following packages should be already used by your project:
+
+- `@nestjs/common` >= 9.0.0
+- `class-transformer` >= 0.5.0
+- `class-validator` >= 0.14.0
+- `reflect-metadata`
+
+> **WARNING**: if your project does not use these packages. The `nestjs-safer-config` package is not for you.
+
 ## Description
 
 The `SaferConfigModule` allows to define and load multiple configuration from any source you want: plain object, yaml file, json file, toml file, or any other parsable format, or from HTTP json response or stream).
