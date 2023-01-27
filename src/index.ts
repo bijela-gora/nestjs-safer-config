@@ -1,2 +1,2 @@
-export { BetterConfigModule } from "./better-config.module";
-export type { BetterConfigOptions, BetterConfigModuleAsyncOptions } from "./types";
+export { SaferConfigModule } from "./safer-config.module";
+export type { SaferConfigOptions, SaferConfigModuleAsyncOptions } from "./types";
