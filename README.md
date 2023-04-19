@@ -1,6 +1,8 @@
 # Configuration module for NestJS
 
-Currently, this package is intended only for `class-transformer` and `class-validator` users.
+The `SaferConfigModule` allows to define and load multiple configuration from any source you want: plain object, yaml file, json file, toml file, or any other parsable format, or from HTTP json response.
+
+You can manage complex configuration object hierarchies.
 
 ## Motivation
 
@@ -14,24 +16,33 @@ I wanted config module for NestJS to be:
 
 And I made it.
 
+## Trade-offs
+
+1. The main purpose of using `class-validator` and `class-transformer` packages is to allow developers to inject configuration object as a dependency using **standard** and simplest constructor injection in a type-safe way. One more advantage of using packages mentioned above is that they widely knew and used by default in NestJS projects. The disadvantage is that decorators might be not the best way to describe expectations. For example, it is crucial to not forget to add `@ValidateNested()` if you need to validate nested instances. Or it is required to add `@Type(() => Number)` if you want to apply string-to-number transformations for a field. Perhaps the biggest disadvantage is that at this moment the `class-validator` and `class-transformer` packages have little support. Little support from reach companies which makes money on open-source and a little support from package owners.
+2. `@nestjs/config` have `registerAs` method. With this kind of API there is no way to achieve type-safety, so, there is no such feature in `nestjs-safer-config` package.
+
 ## Prerequisites
 
-The following packages should be already used by your project:
+Peer dependencies:
 
-- `@nestjs/common` >= 9.0.0
-- `class-transformer` >= 0.5.0
-- `class-validator` >= 0.14.0
-- `reflect-metadata`
+```json
+{
+  "@nestjs/common": "^9.2.1",
+  "class-transformer": "^0.5.1",
+  "class-validator": "^0.14.0",
+  "reflect-metadata": "^0.1.13"
+}
+```
 
 > **WARNING**: if your project does not use these packages. The `nestjs-safer-config` package is not for you.
 
-## Description
-
-The `SaferConfigModule` allows to define and load multiple configuration from any source you want: plain object, yaml file, json file, toml file, or any other parsable format, or from HTTP json response or stream).
-
-You can manage complex configuration object hierarchies with nested configuration.
-
 ## How to use
+
+## Install
+
+```shell
+npm i nestjs-safer-config
+```
 
 ### process.env
 
@@ -105,7 +116,7 @@ You can manage complex configuration object hierarchies with nested configuratio
    SECRET_PHRASE='somesecret' stage=stage port=8080 node ./dist/main.js
    ```
 
-### dotenv
+### How to use with [dotenv](https://www.npmjs.com/package/dotenv) package
 
 `dotenv` package exports useful `parse` function. Let's utilize it to read `.env` file.
 
@@ -117,10 +128,7 @@ You can manage complex configuration object hierarchies with nested configuratio
 
    import * as dotenv from "dotenv";
 
-   export function dotEnvSource(fileNameOrAbsolutePathToFile = ".env") {
-     const pathToEnvFile = path.isAbsolute(fileNameOrAbsolutePathToFile)
-       ? fileNameOrAbsolutePathToFile
-       : path.join(process.cwd(), fileNameOrAbsolutePathToFile);
+   export function dotEnvSource(pathToEnvFile) {
      return dotenv.parse(fs.readFileSync(pathToEnvFile));
    }
    ```
@@ -183,8 +191,3 @@ const secretsFetchWithHttpModule = SaferConfigModule.registerAsync({
 })
 export class AppModule {}
 ```
-
-## Trade-offs
-
-1. The main purpose of using `class-validator` and `class-transformer` packages is to allow developers to inject configuration object as a dependency using **standard** and simplest constructor injection in a type-safe way. One more advantage of using packages mentioned above is that they widely knew and used by default in NestJS projects. The disadvantage is that decorators might be not the best way to describe expectations. For example, it is crucial to not forget to add `@ValidateNested()` if you need to validate nested instances. Or it is required to add `@Type(() => Number)` if you want to apply string-to-number transformations for a field. Perhaps the biggest disadvantage is that at this moment the `class-validator` and `class-transformer` packages have little support. Little support from reach companies which makes money on open-source and a little support from package owners.
-2. `@nestjs/config` have `registerAs` method. With this kind of API there is no way to achieve type-safety, so, there is no such feature in `nestjs-safer-config` package.
