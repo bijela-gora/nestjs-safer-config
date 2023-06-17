@@ -12,7 +12,7 @@ export interface SaferConfigOptions<T> {
 }
 
 export interface SaferConfigModuleAsyncOptions<T>
-  extends Omit<SaferConfigOptions<T>, "sources">,
+  extends Pick<SaferConfigOptions<T>, "isGlobal" | "createInstanceOf">,
     ModuleMetadataImports {
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
   sourcesFactory: (...args: any[]) => Promise<Sources> | Sources;
