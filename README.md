@@ -38,15 +38,15 @@ Peer dependencies:
 
 ## How to use
 
-## Install
+### Install
 
 ```shell
 npm i nestjs-safer-config
 ```
 
-### process.env
+### Define a config class
 
-1. First, describe how config should look like using class declaration statement. And decorate fields with `class-validator` decorators. For example,
+1. Describe how config should look like using class declaration statement. And decorate fields with `class-validator` decorators. For example,
 
    ```typescript
    class AppConfig {
@@ -63,7 +63,9 @@ npm i nestjs-safer-config
 
    > **NOTE**: I strongly recommend to add `readonly` modifier to all and each fields
 
-2. Second, import `SaferConfigModule` in the following way:
+### Import `SaferConfigModule`
+
+2. Import `SaferConfigModule` in the following way:
 
    ```typescript
    @Module({
@@ -85,7 +87,9 @@ npm i nestjs-safer-config
    export class AppModule {}
    ```
 
-3. Third, use the class identifier as NestJS provider token
+### Specify AppConfig as dependency in a constructor of an injectable service
+
+3. Use the config class identifier as NestJS provider token
 
    - for example, here how it can be injected in `AppService`
 
@@ -111,12 +115,12 @@ npm i nestjs-safer-config
      bootstrap();
      ```
 
-4. Last thing to do is to start your app and provide environment variables:
+4. Start your app with environment variables defined:
    ```shell
    SECRET_PHRASE='somesecret' stage=stage port=8080 node ./dist/main.js
    ```
 
-### How to use with [dotenv](https://www.npmjs.com/package/dotenv) package
+## How to use with [dotenv](https://www.npmjs.com/package/dotenv) package
 
 `dotenv` package exports useful `parse` function. Let's utilize it to read `.env` file.
 
