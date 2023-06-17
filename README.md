@@ -70,7 +70,7 @@ npm i nestjs-safer-config
      imports: [
        SaferConfigModule.register({
          isGlobal: true, // or false, or you can skip `isGlobal`
-         cls: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined, or `constructor` shouldn't expect any arguments
+         createInstanceOf: AppConfig, // will be instantiated with data from `sources`. Should not have a `constructor` defined, or `constructor` shouldn't expect any arguments
          sources: [
            // `sources` must be an array of objects or promises of objects
            // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
@@ -142,7 +142,7 @@ npm i nestjs-safer-config
      imports: [
        SaferConfigModule.register({
          isGlobal: true,
-         cls: AppConfig,
+         createInstanceOf: AppConfig,
          sources: [
            // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
            dotEnvSource(),
