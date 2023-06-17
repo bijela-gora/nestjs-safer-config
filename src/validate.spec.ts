@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, expect } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import {
   Contains,
   IsArray,
