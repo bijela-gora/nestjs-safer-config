@@ -1,9 +1,9 @@
 import type { DynamicModule, FactoryProvider } from "@nestjs/common";
 import { makeConfig } from "./make-config";
-import type { SaferConfigModuleAsyncOptions, SaferConfigOptions } from "./types";
+import type { SaferConfigModuleAsyncOptions, SaferConfigModuleOptions } from "./types";
 
 export class SaferConfigModule {
-  static register<T extends object>(options: SaferConfigOptions<T>): DynamicModule {
+  static register<T extends object>(options: SaferConfigModuleOptions<T>): DynamicModule {
     return {
       module: SaferConfigModule,
       global: options.isGlobal ?? false,

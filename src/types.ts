@@ -5,14 +5,14 @@ type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
 export type Sources = Array<unknown | Promise<unknown>>;
 
-export interface SaferConfigOptions<T> {
+export interface SaferConfigModuleOptions<T> {
   isGlobal?: boolean;
   createInstanceOf: ClassConstructor<T>;
   sources: Sources;
 }
 
 export interface SaferConfigModuleAsyncOptions<T>
-  extends Pick<SaferConfigOptions<T>, "isGlobal" | "createInstanceOf">,
+  extends Pick<SaferConfigModuleOptions<T>, "isGlobal" | "createInstanceOf">,
     ModuleMetadataImports {
   inject?: Array<InjectionToken | OptionalFactoryDependency>;
   sourcesFactory: (...args: any[]) => Promise<Sources> | Sources;
