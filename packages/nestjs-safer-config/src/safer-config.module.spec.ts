@@ -54,4 +54,25 @@ describe("SaferConfigModule", () => {
     const someServiceInstance = moduleRef.get(SomeService);
     expect(someServiceInstance.getPort()).toEqual(80);
   });
+
+  describe('registerAsync', () => {
+    it('should work', async () => {
+      class AppConfig {
+        @IsPort()
+        port: string;
+      }
+
+      const AppConfigModule = SaferConfigModule.registerAsync({
+        createInstanceOf: AppConfig,
+        sourcesFactory: () => [{ port: "80" }],
+      });
+
+      const moduleRef = await Test.createTestingModule({
+        imports: [AppConfigModule],
+      }).compile();
+
+      const appConfigInstance = moduleRef.get(AppConfig);
+      expect(appConfigInstance.port).toEqual("80");
+    })
+  })
 });
