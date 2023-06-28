@@ -55,8 +55,8 @@ describe("SaferConfigModule", () => {
     expect(someServiceInstance.getPort()).toEqual(80);
   });
 
-  describe('registerAsync', () => {
-    it('should work', async () => {
+  describe("registerAsync", () => {
+    it("should work", async () => {
       class AppConfig {
         @IsPort()
         port: string;
@@ -73,6 +73,6 @@ describe("SaferConfigModule", () => {
 
       const appConfigInstance = moduleRef.get(AppConfig);
       expect(appConfigInstance.port).toEqual("80");
-    })
-  })
+    });
+  });
 });
