@@ -1,5 +1,7 @@
 # Dumb simple function to parse .env file
 
+Dumb simple function to parse .env file.
+
 This package expose two functions:
 
 - `tryParseDotenvFile` - throw an error if .env file missed
