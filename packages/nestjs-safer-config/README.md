@@ -120,45 +120,30 @@ npm i nestjs-safer-config
    SECRET_PHRASE='somesecret' stage=stage port=8080 node ./dist/main.js
    ```
 
-## How to use with [dotenv](https://www.npmjs.com/package/dotenv) package
+## How to read .env file
 
-`dotenv` package exports useful `parse` function. Let's utilize it to read `.env` file.
+Use [`parse-dotenv-file` package](https://www.npmjs.com/package/parse-dotenv-file).
 
-1. Create a file and name it `dotenv.source.ts` for example
+```typescript
+import { tryParseDotenvFile } from "parse-dotenv-file";
 
-   ```typescript
-   import * as fs from "node:fs";
-   import * as path from "node:path";
-
-   import * as dotenv from "dotenv";
-
-   export function dotEnvSource(pathToEnvFile) {
-     return dotenv.parse(fs.readFileSync(pathToEnvFile));
-   }
-   ```
-
-2. Pass the result to sources
-
-   ```typescript
-   import { dotEnvSource } from "@src/path/to/dotenv.source";
-
-   @Module({
-     imports: [
-       SaferConfigModule.register({
-         isGlobal: true,
-         createInstanceOf: AppConfig,
-         sources: [
-           // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
-           dotEnvSource(),
-           process.env,
-         ],
-       }),
-     ],
-     controllers: [AppController],
-     providers: [AppService],
-   })
-   export class AppModule {}
-   ```
+@Module({
+  imports: [
+    SaferConfigModule.register({
+      isGlobal: true,
+      createInstanceOf: AppConfig,
+      sources: [
+        // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
+        tryParseDotenvFile(),
+        process.env,
+      ],
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
 
 ### HTTP source
 
