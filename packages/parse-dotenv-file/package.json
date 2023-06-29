@@ -1,0 +1,39 @@
+{
+  "name": "parse-dotenv-file",
+  "license": "The Unlicense",
+  "version": "0.1.0",
+  "files": [
+    "./dist"
+  ],
+  "main": "./dist/index.js",
+  "scripts": {
+    "check:style": "prettier --config .prettierrc.json --check .",
+    "lint": "eslint src",
+    "test": "jest",
+    "watch": "tsc --watch --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@tsconfig/node18": "^2.0.1",
+    "@tsconfig/strictest": "^2.0.1",
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.32.0",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3"
+  },
+  "keywords": [
+    "dotenv",
+    "parse"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bijela-gora/nestjs-safer-config.git"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
