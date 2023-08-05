@@ -1,5 +1,5 @@
 import type { ClassConstructor } from "class-transformer";
-import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency } from "@nestjs/common";
+import type { ClassProvider, FactoryProvider, ModuleMetadata } from "@nestjs/common";
 
 type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
@@ -13,9 +13,15 @@ export interface SaferConfigModuleOptions<T> {
 
 export interface SaferConfigModuleAsyncOptions<T>
   extends Pick<SaferConfigModuleOptions<T>, "isGlobal" | "createInstanceOf">,
-    ModuleMetadataImports {
-  sourcesProvider: {
-    inject?: Array<InjectionToken | OptionalFactoryDependency>;
-    useFactory: (...args: any[]) => Promise<Sources> | Sources;
-  };
+    ModuleMetadataImports,
+    SourcesProviderOption {}
+
+export interface SourcesClassProvider {
+  make(): Sources;
+}
+
+export interface SourcesProviderOption {
+  sourcesProvider:
+    | Pick<ClassProvider<SourcesClassProvider>, "useClass">
+    | Pick<FactoryProvider<Sources>, "inject" | "useFactory">;
 }

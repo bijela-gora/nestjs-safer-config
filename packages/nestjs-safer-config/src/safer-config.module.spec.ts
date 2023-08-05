@@ -1,8 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { describe, it, expect } from "@jest/globals";
-import { IsPort } from "class-validator";
+import { IsBase64, IsPort } from "class-validator";
 import { SaferConfigModule } from "./safer-config.module";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Module } from "@nestjs/common";
+import { Sources, SourcesClassProvider } from "./types";
 
 describe("SaferConfigModule", () => {
   it("it should be possible to get AppConfig instance from DI", async () => {
@@ -73,6 +74,47 @@ describe("SaferConfigModule", () => {
 
       const appConfigInstance = moduleRef.get(AppConfig);
       expect(appConfigInstance.port).toEqual("80");
+    });
+
+    it("should accept FactoryProvider to instantiate sources", async () => {
+      class AppConfig {
+        @IsBase64()
+        secret: string;
+      }
+
+      class FakeHttpService {
+        getSecrets() {
+          return Promise.resolve({ secret: "YSBzZWNyZXQ=" });
+        }
+      }
+
+      @Module({
+        providers: [FakeHttpService],
+        exports: [FakeHttpService],
+      })
+      class FakeHttpModule {}
+
+      @Injectable()
+      class SecretsSourcesFactory implements SourcesClassProvider {
+        constructor(private readonly httpServiceFake: FakeHttpService) {}
+
+        make(): Sources {
+          return [this.httpServiceFake.getSecrets()];
+        }
+      }
+
+      const AppConfigModule = SaferConfigModule.registerAsync({
+        imports: [FakeHttpModule],
+        createInstanceOf: AppConfig,
+        sourcesProvider: { useClass: SecretsSourcesFactory },
+      });
+
+      const moduleRef = await Test.createTestingModule({
+        imports: [AppConfigModule],
+      }).compile();
+
+      const appConfigInstance = moduleRef.get(AppConfig);
+      expect(appConfigInstance.secret).toEqual("YSBzZWNyZXQ=");
     });
   });
 });

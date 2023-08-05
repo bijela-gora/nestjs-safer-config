@@ -1,6 +1,6 @@
-import type { DynamicModule, FactoryProvider } from "@nestjs/common";
+import type { ClassProvider, DynamicModule, FactoryProvider } from "@nestjs/common";
 import { makeConfig } from "./make-config";
-import type { SaferConfigModuleAsyncOptions, SaferConfigModuleOptions, Sources } from "./types";
+import type { SaferConfigModuleAsyncOptions, SaferConfigModuleOptions, Sources, SourcesClassProvider } from "./types";
 
 export class SaferConfigModule {
   static register<T extends object>(options: SaferConfigModuleOptions<T>): DynamicModule {
@@ -18,28 +18,49 @@ export class SaferConfigModule {
   }
 
   static registerAsync<T extends object>(options: SaferConfigModuleAsyncOptions<T>): DynamicModule {
-    const { sourcesProvider } = options;
-
-    const SOURCES_INJECTION_TOKEN = Symbol();
-
-    const sourcesProviderFactory: FactoryProvider<Sources> = {
-      provide: SOURCES_INJECTION_TOKEN,
-      ...(sourcesProvider.inject ? sourcesProvider.inject : {}),
-      useFactory: sourcesProvider.useFactory,
+    const module = {
+      module: SaferConfigModule,
+      global: options.isGlobal ?? false,
+      imports: options.imports ?? [],
+      exports: [options.createInstanceOf],
     };
-
+    const SOURCES_INJECTION_TOKEN = Symbol();
     const instanceProvider: FactoryProvider<T> = {
       provide: options.createInstanceOf,
       useFactory: (sources: Sources) => makeConfig(options.createInstanceOf, sources),
       inject: [SOURCES_INJECTION_TOKEN],
     };
 
-    return {
-      module: SaferConfigModule,
-      global: options.isGlobal ?? false,
-      imports: options.imports ?? [],
-      providers: [sourcesProviderFactory, instanceProvider],
-      exports: [options.createInstanceOf],
-    };
+    const { sourcesProvider } = options;
+    if ("useFactory" in sourcesProvider) {
+      const sourcesProviderFactory: FactoryProvider<Sources> = {
+        provide: SOURCES_INJECTION_TOKEN,
+        ...(sourcesProvider.inject ? sourcesProvider.inject : {}),
+        useFactory: sourcesProvider.useFactory,
+      };
+      return {
+        ...module,
+        providers: [sourcesProviderFactory, instanceProvider],
+      };
+    }
+
+    if ("useClass" in sourcesProvider) {
+      const SOURCES_FACTORY_PROVIDER = Symbol();
+      const sourcesFactoryProvider: ClassProvider<SourcesClassProvider> = {
+        provide: SOURCES_FACTORY_PROVIDER,
+        useClass: sourcesProvider.useClass,
+      };
+      const sourcesProviderFactory: FactoryProvider<Sources> = {
+        provide: SOURCES_INJECTION_TOKEN,
+        inject: [SOURCES_FACTORY_PROVIDER],
+        useFactory: (sourcesFactory: SourcesClassProvider) => sourcesFactory.make(),
+      };
+      return {
+        ...module,
+        providers: [sourcesFactoryProvider, sourcesProviderFactory, instanceProvider],
+      };
+    }
+
+    throw new Error("'sourcesOptions' property should be an object with 'useFactory' or 'useClass' properties");
   }
 }
