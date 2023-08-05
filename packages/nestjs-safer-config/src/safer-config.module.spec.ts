@@ -56,7 +56,7 @@ describe("SaferConfigModule", () => {
   });
 
   describe("registerAsync", () => {
-    it("should work", async () => {
+    it("should accept FactoryProvider to instantiate sources", async () => {
       class AppConfig {
         @IsPort()
         port: string;
@@ -64,7 +64,7 @@ describe("SaferConfigModule", () => {
 
       const AppConfigModule = SaferConfigModule.registerAsync({
         createInstanceOf: AppConfig,
-        sourcesFactory: () => [{ port: "80" }],
+        sourcesProvider: { useFactory: () => [{ port: "80" }] },
       });
 
       const moduleRef = await Test.createTestingModule({
