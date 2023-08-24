@@ -27,3 +27,4 @@ openssl ciphers -v 'ECDHE-ECDSA-AES256-GCM-SHA384'
 - https://www.ssllabs.com/ssltest/
 - https://ssl-config.mozilla.org/
 - https://www.scottbrady91.com/openssl/creating-elliptical-curve-keys-using-openssl
+- https://ciphersuite.info/cs/TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384/
