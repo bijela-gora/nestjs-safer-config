@@ -1,5 +1,5 @@
 import type { ClassProvider, DynamicModule, FactoryProvider } from "@nestjs/common";
-import { makeConfig } from "./make-config";
+import { instantiateAndValidate } from "./instantiate-and-validate";
 import type { SaferConfigModuleAsyncOptions, SaferConfigModuleOptions, Sources, SourcesClassProvider } from "./types";
 
 export class SaferConfigModule {
@@ -10,7 +10,7 @@ export class SaferConfigModule {
       providers: [
         {
           provide: options.createInstanceOf,
-          useFactory: () => makeConfig(options.createInstanceOf, options.sources),
+          useFactory: () => instantiateAndValidate(options.createInstanceOf, options.sources),
         },
       ],
       exports: [options.createInstanceOf],
@@ -27,7 +27,7 @@ export class SaferConfigModule {
     const SOURCES_INJECTION_TOKEN = Symbol();
     const instanceProvider: FactoryProvider<T> = {
       provide: options.createInstanceOf,
-      useFactory: (sources: Sources) => makeConfig(options.createInstanceOf, sources),
+      useFactory: (sources: Sources) => instantiateAndValidate(options.createInstanceOf, sources),
       inject: [SOURCES_INJECTION_TOKEN],
     };
 
