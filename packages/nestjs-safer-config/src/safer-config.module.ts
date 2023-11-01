@@ -35,7 +35,7 @@ export class SaferConfigModule {
     if ("useFactory" in sourcesProvider) {
       const sourcesProviderFactory: FactoryProvider<Sources> = {
         provide: SOURCES_INJECTION_TOKEN,
-        ...(sourcesProvider.inject ? sourcesProvider.inject : {}),
+        inject: sourcesProvider.inject ? sourcesProvider.inject : [],
         useFactory: sourcesProvider.useFactory,
       };
       return {

@@ -1,9 +1,11 @@
 import { Test } from "@nestjs/testing";
 import { describe, it, expect } from "@jest/globals";
-import { IsBase64, IsPort } from "class-validator";
+import { IsBase64, IsPort, IsString } from "class-validator";
 import { SaferConfigModule } from "./safer-config.module";
 import { Injectable, Module } from "@nestjs/common";
 import { Sources, SourcesClassProvider } from "./types";
+
+jest.setTimeout(1000);
 
 describe("SaferConfigModule", () => {
   it("it should be possible to get AppConfig instance from DI", async () => {
@@ -72,6 +74,45 @@ describe("SaferConfigModule", () => {
         imports: [AppConfigModule],
       }).compile();
 
+      const appConfigInstance = moduleRef.get(AppConfig);
+      expect(appConfigInstance.port).toEqual("80");
+    });
+
+    it("should accept FactoryProvider with inject to instantiate sources", async () => {
+      class SecretsConfig {
+        @IsString()
+        secret: string;
+      }
+
+      const SecretsConfigModule = SaferConfigModule.register({
+        createInstanceOf: SecretsConfig,
+        sources: [{ secret: "123" }],
+      });
+
+      class AppConfig {
+        @IsPort()
+        port: string;
+      }
+
+      const AppConfigModule = SaferConfigModule.registerAsync({
+        imports: [SecretsConfigModule],
+        createInstanceOf: AppConfig,
+        sourcesProvider: {
+          inject: [SecretsConfig],
+          useFactory: async (secretsConfig: SecretsConfig) =>
+            new Promise((resolve, reject) => {
+              setTimeout(() => {
+                if (secretsConfig.secret === "123") {
+                  resolve([{ port: 80 }]);
+                } else {
+                  reject(new Error("can't get secret"));
+                }
+              }, 20);
+            }),
+        },
+      });
+
+      const moduleRef = await Test.createTestingModule({ imports: [AppConfigModule] }).compile();
       const appConfigInstance = moduleRef.get(AppConfig);
       expect(appConfigInstance.port).toEqual("80");
     });
