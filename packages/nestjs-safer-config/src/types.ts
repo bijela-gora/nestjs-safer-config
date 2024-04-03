@@ -3,6 +3,7 @@ import type { ClassProvider, FactoryProvider, ModuleMetadata } from "@nestjs/com
 
 type ModuleMetadataImports = Pick<ModuleMetadata, "imports">;
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type Sources = Array<unknown | Promise<unknown>>;
 
 export interface SaferConfigModuleOptions<T> {

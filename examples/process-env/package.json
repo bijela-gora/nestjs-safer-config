@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "nest start",
-    "watch": "nest start --watch",
-    "debug": "nest start -e \"node --inspect-brk\""
+    "start": "NAME=K nest start",
+    "watch": "NAME=K nest start --watch",
+    "debug": "NAME=K nest start -e \"node --inspect-brk\""
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

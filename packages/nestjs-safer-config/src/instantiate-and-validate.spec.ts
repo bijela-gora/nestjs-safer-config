@@ -24,7 +24,7 @@ describe("instantiateAndValidate", () => {
     }).rejects.toThrow(
       `An instance of AppConfig has failed the validation:
  - property port has failed the following constraints: port must be an integer number 
-`
+`,
     );
   });
 
@@ -48,7 +48,7 @@ describe("instantiateAndValidate", () => {
     }).rejects.toThrow(
       `An instance of AppConfig has failed the validation:
  - property port has failed the following constraints: port must be a port 
-`
+`,
     );
   });
 });

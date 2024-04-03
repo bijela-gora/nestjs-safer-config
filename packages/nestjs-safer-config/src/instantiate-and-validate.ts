@@ -5,7 +5,7 @@ import type { Sources } from "./types";
 
 export async function instantiateAndValidate<R extends object>(
   createInstanceOf: ClassConstructor<R>,
-  sources: Sources
+  sources: Sources,
 ): Promise<R> {
   const obj: unknown = Object.assign({}, ...(await Promise.all(sources)));
   const validationResult = validate(instantiate(createInstanceOf, obj));

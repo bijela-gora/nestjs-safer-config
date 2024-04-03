@@ -60,7 +60,7 @@ describe("validate", () => {
       success: false,
       error: new TypeError(
         "An instance of SchedulerConfig has failed the validation:\n" +
-          " - property days has failed the following constraints: each value in days must be a number conforming to the specified constraints \n"
+          " - property days has failed the following constraints: each value in days must be a number conforming to the specified constraints \n",
       ),
     });
   });
@@ -86,7 +86,7 @@ describe("validate", () => {
       success: false,
       error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
-          " - property schedulers[0].cron has failed the following constraints: cron must be a string \n"
+          " - property schedulers[0].cron has failed the following constraints: cron must be a string \n",
       ),
     });
   });
@@ -112,7 +112,7 @@ describe("validate", () => {
       success: false,
       error: new TypeError(
         "An instance of AppConfig has failed the validation:\n" +
-          " - property schedulers has failed the following constraints: each value in schedulers must be an instance of SchedulerConfig \n"
+          " - property schedulers has failed the following constraints: each value in schedulers must be an instance of SchedulerConfig \n",
       ),
     });
   });
@@ -139,7 +139,7 @@ describe("validate", () => {
           " - property stage has failed the following constraints: stage must be one of the following values: development, qa, stage, production \n" +
           "\n" +
           "An instance of AppConfig has failed the validation:\n" +
-          " - property secret has failed the following constraints: secret must be a number conforming to the specified constraints \n"
+          " - property secret has failed the following constraints: secret must be a number conforming to the specified constraints \n",
       ),
     });
   });
@@ -187,7 +187,7 @@ describe("validate", () => {
           "\n" +
           "An instance of Worker has failed the validation:\n" +
           " - property person.name has failed the following constraints: name must be longer than or equal to 3 characters \n" +
-          " - property person.age has failed the following constraints: age must be a positive number \n"
+          " - property person.age has failed the following constraints: age must be a positive number \n",
       ),
     });
   });
