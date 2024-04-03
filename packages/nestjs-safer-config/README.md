@@ -122,10 +122,8 @@ npm i nestjs-safer-config
 
 ## How to read .env file
 
-Use [`parse-dotenv-file` package](https://www.npmjs.com/package/parse-dotenv-file).
-
 ```typescript
-import { tryParseDotenvFile } from "parse-dotenv-file";
+import { parseDotenvFile } from "nestjs-safer-config";
 
 @Module({
   imports: [
@@ -134,7 +132,7 @@ import { tryParseDotenvFile } from "parse-dotenv-file";
       createInstanceOf: AppConfig,
       sources: [
         // `sources` will be merged into one object with `Object.assign()`. That object will be used to populate `AppConfig` properties
-        tryParseDotenvFile(),
+        parseDotenvFile(),
         process.env,
       ],
     }),
